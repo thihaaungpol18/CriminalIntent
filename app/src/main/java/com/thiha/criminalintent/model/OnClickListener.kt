@@ -1,4 +1,4 @@
-package com.thiha.criminalintent
+package com.thiha.criminalintent.model
 
 /**
 project: CriminalIntent
