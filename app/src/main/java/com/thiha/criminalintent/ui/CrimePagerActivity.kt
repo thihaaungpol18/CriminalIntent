@@ -1,4 +1,4 @@
-package com.thiha.criminalintent.controller
+package com.thiha.criminalintent.ui
 
 import android.os.Bundle
 import android.os.Handler
@@ -12,10 +12,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
 import com.thiha.criminalintent.R
-import com.thiha.criminalintent.model.CrimeLab
 import kotlinx.android.synthetic.main.activity_crime_pager.*
 import kotlinx.android.synthetic.main.fragment_crime.*
-import kotlinx.android.synthetic.main.fragment_list_crime.*
 
 
 class CrimePagerActivity : AppCompatActivity() {

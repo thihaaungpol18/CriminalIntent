@@ -1,4 +1,4 @@
-package com.thiha.criminalintent.controller
+package com.thiha.criminalintent.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

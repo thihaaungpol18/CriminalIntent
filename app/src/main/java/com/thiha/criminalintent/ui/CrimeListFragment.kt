@@ -1,4 +1,4 @@
-package com.thiha.criminalintent.controller
+package com.thiha.criminalintent.ui
 
 import android.content.DialogInterface
 import android.content.Intent
@@ -11,9 +11,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.thiha.criminalintent.R
-import com.thiha.criminalintent.model.Crime
+import com.thiha.criminalintent.db.Crime
 import com.thiha.criminalintent.model.CrimeAdapter
-import com.thiha.criminalintent.model.CrimeLab
 import com.thiha.criminalintent.model.OnClickListener
 import kotlinx.android.synthetic.main.fragment_list_crime.*
 import java.util.*
@@ -23,7 +22,7 @@ project: CriminalIntent
 Created by : Thiha
 date : 6/18/2020
  */
-class CrimeListFragment : Fragment(), OnClickListener {
+class CrimeListFragment : Fragment(), CrimeAdapter.OnClickListener {
     private lateinit var adapter: CrimeAdapter
     private var pressedItem: Int? = null
     override fun onCreateView(
@@ -55,7 +54,7 @@ class CrimeListFragment : Fragment(), OnClickListener {
                     if (editText.text.toString().trim().isNotEmpty()) {
                         CrimeLab.addCrime(
                             Crime(
-                                0, editText.text.toString().trim(),
+                                UUID.randomUUID(), editText.text.toString().trim(),
                                 Date(), false, mRequiresPolice = true
                             )
                         )

@@ -81,4 +81,8 @@ class CrimeAdapter(
         const val BigCrime = 1
         const val SmallCrime = 0
     }
+
+    interface OnClickListener {
+        fun onClick(position: Int)
+    }
 }

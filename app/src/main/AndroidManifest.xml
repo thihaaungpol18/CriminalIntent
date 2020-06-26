@@ -11,9 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".controller.CrimePagerActivity"
-            android:parentActivityName=".controller.CrimeListActivity" />
-        <activity android:name=".controller.CrimeListActivity">
+            android:name=".ui.CrimePagerActivity"
+            android:parentActivityName=".ui.CrimeListActivity" />
+        <activity android:name=".ui.CrimeListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

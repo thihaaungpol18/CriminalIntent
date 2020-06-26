@@ -1,4 +1,4 @@
-package com.thiha.criminalintent.controller
+package com.thiha.criminalintent.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -8,10 +8,8 @@ import android.widget.DatePicker
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import com.google.android.material.snackbar.Snackbar
 import com.thiha.criminalintent.R
-import com.thiha.criminalintent.model.Crime
-import com.thiha.criminalintent.model.CrimeLab
+import com.thiha.criminalintent.db.Crime
 import com.thiha.criminalintent.model.DateToString
 import kotlinx.android.synthetic.main.fragment_crime.*
 import java.util.*
@@ -49,7 +47,6 @@ class CrimeFragment : Fragment() {
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
             val day = calendar.get(Calendar.DAY_OF_MONTH)
-            DatePickerFragment.dateToSend = GregorianCalendar(year, month, day).time
             val v = LayoutInflater.from(requireContext())
                 .inflate(R.layout.dialog_date, null)
             val datePicker = v.findViewById(R.id.id_datePicker) as DatePicker

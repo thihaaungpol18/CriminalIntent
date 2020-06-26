@@ -1,12 +1,11 @@
-package com.thiha.criminalintent.controller
+package com.thiha.criminalintent.ui
 
 import android.view.Menu
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.thiha.criminalintent.R
-import com.thiha.criminalintent.model.Crime
-import com.thiha.criminalintent.model.CrimeLab
+import com.thiha.criminalintent.db.Crime
 import kotlinx.android.synthetic.main.fragment_list_crime.*
 import java.util.*
 
@@ -32,7 +31,7 @@ class CrimeListActivity : SingleFragmentActivity() {
             R.id.menu_new_crime -> {
                 CrimeLab.addCrime(
                     Crime(
-                        0,
+                        UUID.randomUUID(),
                         "Justin's Case",
                         Date(),
                         mSolved = false,
