@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.thiha.criminalintent.R
-import kotlinx.android.synthetic.main.activity_fragment.*
 
 /**
 project: CriminalIntent
@@ -18,7 +17,6 @@ abstract class SingleFragmentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fragment)
-        setSupportActionBar(id_toolbar)
 
         val fm: FragmentManager = supportFragmentManager
         var fragment: Fragment? = fm.findFragmentById(R.id.id_container)
@@ -27,6 +25,5 @@ abstract class SingleFragmentActivity : AppCompatActivity() {
             fm.beginTransaction()
                 .add(R.id.id_container, fragment).commit()
         }
-
     }
 }

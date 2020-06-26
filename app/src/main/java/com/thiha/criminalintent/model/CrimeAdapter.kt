@@ -72,7 +72,7 @@ class CrimeAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentCrime = CrimeLab.getCrime(position)
         tvTitle.text = currentCrime.mTitle
-        tvDate.text = currentCrime.mDate
+        tvDate.text = DateToString().formatDate(currentCrime.mDate)
     }
 
     companion object {
