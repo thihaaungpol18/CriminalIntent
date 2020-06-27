@@ -58,15 +58,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_crime_date" />
 
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkbox_required_police"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/required_police"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/checkbox_crime_solved" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_done"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/done"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/checkbox_crime_solved" />
+        app:layout_constraintTop_toBottomOf="@id/checkbox_required_police" />
 
     <Button
         android:id="@+id/btn_call_police"

@@ -4,23 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_graph"
     app:startDestination="@id/listFrag">
+
     <fragment
         android:id="@+id/listFrag"
         android:name="com.thiha.criminalintent.ui.CrimeListFragment"
-        android:label="ListFrag"
+        android:label="Home"
         tools:layout="@layout/fragment_list_crime">
         <action
             android:id="@+id/toDetail"
             app:destination="@id/detailFrag"
-            app:enterAnim="@anim/slide_in_left"
+            app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
-
         <argument
             android:name="clickPosition"
             android:defaultValue="-1"
             app:argType="integer" />
+        <action
+            android:id="@+id/toPagerFrag"
+            app:destination="@id/pagerFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -36,4 +43,9 @@
             app:popUpTo="@id/listFrag" />
     </fragment>
 
+    <fragment
+        android:id="@+id/pagerFragment"
+        android:name="com.thiha.criminalintent.ui.PagerFragment"
+        android:label="fragment_pager"
+        tools:layout="@layout/fragment_pager" />
 </navigation>

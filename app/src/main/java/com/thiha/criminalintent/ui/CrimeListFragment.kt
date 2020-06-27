@@ -2,9 +2,7 @@ package com.thiha.criminalintent.ui
 
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
@@ -26,7 +24,7 @@ date : 6/18/2020
  */
 class CrimeListFragment : Fragment(), CrimeAdapter.OnClickListener {
     private lateinit var adapter: CrimeAdapter
-    private lateinit var viewmodel: ListViewModel
+    private lateinit var viewModel: ListViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,7 +38,7 @@ class CrimeListFragment : Fragment(), CrimeAdapter.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewmodel = ViewModelProvider(this@CrimeListFragment).get(ListViewModel::class.java)
+        viewModel = ViewModelProvider(this@CrimeListFragment).get(ListViewModel::class.java)
 
         id_recyclerView.layoutManager =
             LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
@@ -57,16 +55,15 @@ class CrimeListFragment : Fragment(), CrimeAdapter.OnClickListener {
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
 
-        viewmodel.allCrimes.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        viewModel.allCrimes.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             adapter.setCrimes(it)
             if (it.isEmpty()) {
-
                 AlertDialog.Builder(this.requireContext()).setTitle("Add One Crime")
                     .setMessage("There is no crimes yet!")
                     .setView(editText)
                     .setPositiveButton("Ok") { _: DialogInterface, _: Int ->
                         if (editText.text.toString().trim().isNotEmpty()) {
-                            viewmodel.insert(
+                            viewModel.insert(
                                 Crime(
                                     0,
                                     editText.text.toString().trim(),
@@ -83,11 +80,21 @@ class CrimeListFragment : Fragment(), CrimeAdapter.OnClickListener {
 
             }
         })
+    }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_crime_list, menu)
+        val subtitleItem = menu.findItem(R.id.menu_show_sub)
+//        if (CrimeListActivity.mSubtitleVisible == true) {
+//            subtitleItem.setTitle(R.string.hide_subtitle)
+//        } else {
+//            subtitleItem.setTitle(R.string.show_subtitle)
+//        }
     }
 
     override fun onClick(position: Int) {
         val bundle = bundleOf("clickPosition" to position)
-        findNavController().navigate(R.id.toDetail, bundle)
+        findNavController().navigate(R.id.toPagerFrag, bundle)
     }
 }

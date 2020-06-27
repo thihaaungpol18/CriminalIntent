@@ -24,7 +24,6 @@ date : 6/18/2020
 class CrimeFragment : Fragment() {
 
     private lateinit var viewModel: ListViewModel
-    private var list = emptyList<Crime>()
     private var currentPosition: Int? = null
     private var currentCrime: Crime? = null
 
@@ -36,10 +35,6 @@ class CrimeFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_crime, container, false)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -48,7 +43,8 @@ class CrimeFragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity()).get(ListViewModel::class.java)
 
         if (arguments != null) {
-            currentPosition = requireArguments().getInt("clickPosition")
+//            currentPosition = requireArguments().getInt("clickPosition")
+            currentPosition = arguments?.getInt(ARG_CRIME_ID)
 
             viewModel.allCrimes.observe(viewLifecycleOwner, Observer {
                 if (currentPosition != -1) {
@@ -62,17 +58,17 @@ class CrimeFragment : Fragment() {
                     btn_crime_date.text = date
 
                     checkbox_crime_solved.isChecked = currentCrime!!.solved
-
+                    checkbox_required_police.isChecked = currentCrime!!.requiredPolice
                     if (currentCrime!!.requiredPolice) {
                         btn_call_police.visibility = View.VISIBLE
                     }
+
                 } else {
                     currentCrime = null
                 }
             })
-        }
 
-        //        btn_crime_date.setOnClickListener {
+            //        btn_crime_date.setOnClickListener {
 //            val fm = parentFragmentManager
 //            val datePickerFragment = DatePickerFragment.newInstance(currentCrime!!.mDate)
 //            datePickerFragment.setTargetFragment(this, REQUEST_DATE)
@@ -106,29 +102,33 @@ class CrimeFragment : Fragment() {
 //                }
 //                .create().show()
 
-        btn_done.setOnClickListener {
-            if (currentCrime != null) {
-                viewModel.update(currentCrime!!)
-            } else {
-                if (et_title.text.toString().trim().isNotEmpty()) {
-                    viewModel.insert(
-                        Crime(
-                            id = 0,
-                            title = et_title.text.toString().trim(),
-                            date = Date(),
-                            solved = checkbox_crime_solved.isChecked,
-                            requiredPolice = (Random().nextInt(10) % 2 == 0)
-                        )
-                    )
+            btn_done.setOnClickListener {
+                if (currentCrime != null) {
+                    viewModel.update(currentCrime!!)
                 } else {
-                    et_title.error = "Title Required"
-                    et_title.requestFocus()
-                    return@setOnClickListener
+                    if (et_title.text.toString().trim().isNotEmpty()) {
+                        viewModel.insert(
+                            Crime(
+                                id = 0,
+                                title = et_title.text.toString().trim(),
+                                date = Date(),
+                                solved = checkbox_crime_solved.isChecked,
+                                requiredPolice = (checkbox_required_police.isChecked)
+                            )
+                        )
+                    } else {
+                        et_title.error = "Title Required"
+                        et_title.requestFocus()
+                        return@setOnClickListener
+                    }
                 }
+                findNavController().navigate(R.id.goHome)
             }
-            findNavController().navigate(R.id.goHome)
+
         }
+
     }
+
 
 //    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 //        super.onActivityResult(requestCode, resultCode, data)
@@ -143,7 +143,6 @@ class CrimeFragment : Fragment() {
 
     companion object {
         private const val ARG_CRIME_ID = "crime_id"
-        private const val DIALOG_DATE = "DialogDate"
         private const val TAG = "CrimeFragment"
         fun newInstance(crimeID: Int): Fragment {
             val bundle = Bundle()

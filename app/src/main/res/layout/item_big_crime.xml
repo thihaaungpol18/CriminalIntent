@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
     android:padding="8dp"
-    app:cardBackgroundColor="@android:color/holo_red_light"
+    app:cardBackgroundColor="@color/colorPrimary"
     app:cardCornerRadius="4dp"
     app:cardElevation="12dp"
     app:cardPreventCornerOverlap="false">

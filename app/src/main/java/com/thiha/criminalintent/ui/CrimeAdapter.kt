@@ -49,7 +49,6 @@ class CrimeAdapter(
         override fun onClick(v: View?) {
             onClickListener.onClick(adapterPosition)
         }
-
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -58,7 +57,6 @@ class CrimeAdapter(
             true -> BigCrime
         }
     }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == SmallCrime) {
