@@ -1,4 +1,4 @@
-package com.thiha.criminalintent.model
+package com.thiha.criminalintent.ui
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +7,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.thiha.criminalintent.R
 import com.thiha.criminalintent.db.Crime
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
@@ -79,7 +81,9 @@ class CrimeAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentCrime = crimeLists[position]
         tvTitle.text = currentCrime.title
-        tvDate.text = DateToString().formatDate(currentCrime.date)
+        val formatter = SimpleDateFormat("EEE, d MMM yyyy hh:mm aaa", Locale.US)
+        val date = formatter.format(currentCrime.date)
+        tvDate.text = date
     }
 
     fun setCrimes(list: List<Crime>) {

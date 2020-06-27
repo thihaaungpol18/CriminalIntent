@@ -2,6 +2,9 @@ package com.thiha.criminalintent.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
+import java.util.*
 
 /**
 project: CriminalIntent
@@ -12,7 +15,8 @@ date : 6/18/2020
 data class Crime(
     @PrimaryKey(autoGenerate = true) var id: Int,
     var title: String,
-    var date: String,
+    @TypeConverters(Converters::class)
+    var date: Date,
     var solved: Boolean,
     var requiredPolice: Boolean
 )

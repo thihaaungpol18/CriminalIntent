@@ -16,12 +16,24 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+
+        <argument
+            android:name="clickPosition"
+            android:defaultValue="-1"
+            app:argType="integer" />
     </fragment>
 
     <fragment
         android:id="@+id/detailFrag"
         android:name="com.thiha.criminalintent.ui.CrimeFragment"
         android:label="New Crime"
-        tools:layout="@layout/fragment_crime" />
+        tools:layout="@layout/fragment_crime">
+        <action
+            android:id="@+id/goHome"
+            app:destination="@id/listFrag"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/listFrag" />
+    </fragment>
 
 </navigation>
