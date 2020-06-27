@@ -29,20 +29,20 @@ class CrimePagerActivity : AppCompatActivity() {
             } else {
                 btn_first.visibility = Button.VISIBLE
             }
-            if (position == (CrimeLab.getCrimes().size - 1) && btn_end.visibility == Button.VISIBLE) {
-                btn_end.visibility = Button.GONE
-            } else {
-                btn_end.visibility = Button.VISIBLE
-            }
+//            if (position == (CrimeLab.getCrimes().size - 1) && btn_end.visibility == Button.VISIBLE) {
+//                btn_end.visibility = Button.GONE
+//            } else {
+//                btn_end.visibility = Button.VISIBLE
+//            }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_crime_pager)
-        val mCrimes = CrimeLab.get(this).getCrimes()
-        val adapter = PagerAdapter(this@CrimePagerActivity, mCrimes.size)
-        id_viewpager.adapter = adapter
+//        val mCrimes = CrimeLab.get(this).getCrimes()
+//        val adapter = PagerAdapter(this@CrimePagerActivity, mCrimes.size)
+//        id_viewpager.adapter = adapter
         id_viewpager.registerOnPageChangeCallback(pagerCallBack)
         val i = intent.getIntExtra(ARG_CRIME_ID, 0)
         Handler().postDelayed({
@@ -56,7 +56,7 @@ class CrimePagerActivity : AppCompatActivity() {
         }
         btn_end.setOnClickListener {
             Handler().postDelayed({
-                id_viewpager.setCurrentItem(CrimeLab.getCrimes().size, false)
+//                id_viewpager.setCurrentItem(CrimeLab.getCrimes().size, false)
             }, 100)
         }
     }
@@ -73,9 +73,9 @@ class CrimePagerActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_delete) {
-            CrimeLab.deleteCrime(CrimeFragment.currentCrime).also {
-                Snackbar.make(btn_crime_date, "Deleted", Snackbar.LENGTH_LONG).show()
-            }
+//            CrimeLab.deleteCrime(CrimeFragment.currentCrime).also {
+//                Snackbar.make(btn_crime_date, "Deleted", Snackbar.LENGTH_LONG).show()
+//            }
             finish()
         }
         return super.onOptionsItemSelected(item)

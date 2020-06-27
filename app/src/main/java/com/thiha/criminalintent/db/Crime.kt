@@ -10,8 +10,7 @@ date : 6/18/2020
  */
 @Entity(tableName = "crime_table")
 data class Crime(
-    @PrimaryKey(autoGenerate = true)
-    var id: Int,
+    @PrimaryKey(autoGenerate = true) var id: Int,
     var title: String,
     var date: String,
     var solved: Boolean,

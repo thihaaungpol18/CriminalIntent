@@ -1,18 +1,12 @@
 package com.thiha.criminalintent.ui
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
-import android.view.*
-import android.widget.DatePicker
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.thiha.criminalintent.R
 import com.thiha.criminalintent.db.Crime
-import com.thiha.criminalintent.model.DateToString
-import kotlinx.android.synthetic.main.fragment_crime.*
-import java.util.*
 
 /**
 project: CriminalIntent
@@ -32,75 +26,77 @@ class CrimeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val uuid = arguments?.getInt(ARG_CRIME_ID)
+//        val uuid = arguments?.getInt(ARG_CRIME_ID)
 //        currentCrime = CrimeLab.getCrime(uuid!!)
 
-        btn_crime_date.setOnClickListener {
+//        btn_crime_date.setOnClickListener {
 //            val fm = parentFragmentManager
 //            val datePickerFragment = DatePickerFragment.newInstance(currentCrime!!.mDate)
 //            datePickerFragment.setTargetFragment(this, REQUEST_DATE)
 //            datePickerFragment.show(fm, DIALOG_DATE)
 
-            val calendar = Calendar.getInstance()
-            calendar.time = Date()
+//            val calendar = Calendar.getInstance()
+//            calendar.time = Date()
 //        = arguments?.getSerializable(ARG_DATE) as Date
-            val year = calendar.get(Calendar.YEAR)
-            val month = calendar.get(Calendar.MONTH)
-            val day = calendar.get(Calendar.DAY_OF_MONTH)
-            val v = LayoutInflater.from(requireContext())
-                .inflate(R.layout.dialog_date, null)
-            val datePicker = v.findViewById(R.id.id_datePicker) as DatePicker
-            datePicker.init(year, month, day, null)
+//            val year = calendar.get(Calendar.YEAR)
+//            val month = calendar.get(Calendar.MONTH)
+//            val day = calendar.get(Calendar.DAY_OF_MONTH)
+//            val v = LayoutInflater.from(requireContext())
+//                .inflate(R.layout.dialog_date, null)
+//            val datePicker = v.findViewById(R.id.id_datePicker) as DatePicker
+//            datePicker.init(year, month, day, null)
 
 
-            AlertDialog.Builder(this.requireContext())
-                .setTitle(R.string.date_picker_title)
-                .setView(v)
-                .setPositiveButton(
-                    "Yes"
-                ) { _, _ ->
-                    currentCrime!!.mDate =
-                        GregorianCalendar(
-                            datePicker.year,
-                            datePicker.month,
-                            datePicker.dayOfMonth
-                        ).time
-                    btn_crime_date.text = DateToString().formatDate(currentCrime!!.mDate)
-                }.create().show()
+//            AlertDialog.Builder(this.requireContext())
+//                .setTitle(R.string.date_picker_title)
+//                .setView(v)
+//                .setPositiveButton(
+//                    "Yes"
+//                ) { _, _ ->
+//                    currentCrime!!.mDate =
+//                        GregorianCalendar(
+//                            datePicker.year,
+//                            datePicker.month,
+//                            datePicker.dayOfMonth
+//                        ).time
+//                    btn_crime_date.text = DateToString().formatDate(currentCrime!!.mDate)
+//                }
+//                .create().show()
 
         }
-        et_title.setText(currentCrime!!.mTitle)
-        btn_crime_date.text = DateToString().formatDate(currentCrime!!.mDate)
-        checkbox_crime_solved.isChecked = currentCrime!!.mSolved
-        if (currentCrime!!.mRequiresPolice) {
-            btn_call_police.visibility = View.VISIBLE
-        }
+//        et_title.setText(currentCrime!!.title)
+//        btn_crime_date.text = DateToString().formatDate(currentCrime!!.date)
+//        checkbox_crime_solved.isChecked = currentCrime!!.solved
+//        if (currentCrime!!.requiredPolice) {
+//            btn_call_police.visibility = View.VISIBLE
+//        }
 
-        btn_done.setOnClickListener {
-            currentCrime = Crime(
-                mId = UUID.randomUUID(),
-                mTitle = et_title.text.toString().trim(),
-                mDate = Date(),
-                mSolved = checkbox_crime_solved.isChecked,
-                mRequiresPolice = (Random().nextInt(10) % 2 == 0)
-            )
-            activity?.finish()
-        }
-    }
+//        btn_done.setOnClickListener {
+//            currentCrime = Crime(
+//                mId = UUID.randomUUID(),
+//                mTitle = et_title.text.toString().trim(),
+//                mDate = Date(),
+//                mSolved = checkbox_crime_solved.isChecked,
+//                mRequiresPolice = (Random().nextInt(10) % 2 == 0)
+//            )
+//            activity?.finish()
+//        }
+//    }
 
     override fun onPause() {
         super.onPause()
-        CrimeLab.get(requireContext()).updateCrime(currentCrime!!)
+//        CrimeLab.get(requireContext()).updateCrime(currentCrime!!)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_DATE && resultCode == Activity.RESULT_OK) {
-            btn_crime_date.text = data?.getSerializableExtra("DatePickerFragment").toString()
-            currentCrime?.mDate = data?.getSerializableExtra("DatePickerFragment") as Date
-            Toast.makeText(this.context, "OK", Toast.LENGTH_SHORT).show()
-        }
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (requestCode == REQUEST_DATE && resultCode == Activity.RESULT_OK) {
+//            btn_crime_date.text = data?.getSerializableExtra("DatePickerFragment").toString()
+//            currentCrime?.date =
+//                (data?.getSerializableExtra("DatePickerFragment") as Date).toString()
+//            Toast.makeText(this.context, "OK", Toast.LENGTH_SHORT).show()
+//        }
+//    }
 
     companion object {
         private const val ARG_CRIME_ID = "crime_id"

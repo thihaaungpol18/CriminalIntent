@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.thiha.criminalintent.R
+import com.thiha.criminalintent.db.Crime
+
 
 /**
 project: CriminalIntent
@@ -16,6 +18,9 @@ class CrimeAdapter(
     private val onClickListener: OnClickListener
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var crimeLists = emptyList<Crime>()
+
     class SmallCrimeVH(itemView: View, private val onClickListener: OnClickListener) :
         RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
@@ -42,14 +47,16 @@ class CrimeAdapter(
         override fun onClick(v: View?) {
             onClickListener.onClick(adapterPosition)
         }
+
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (CrimeLab.getCrime(position).mRequiresPolice) {
+        return when (crimeLists[position].requiredPolice) {
             false -> SmallCrime
             true -> BigCrime
         }
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == SmallCrime) {
@@ -67,12 +74,17 @@ class CrimeAdapter(
         }
     }
 
-    override fun getItemCount(): Int = CrimeLab.getCrimes().size
+    override fun getItemCount(): Int = crimeLists.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentCrime = CrimeLab.getCrime(position)
-        tvTitle.text = currentCrime.mTitle
-        tvDate.text = DateToString().formatDate(currentCrime.mDate)
+        val currentCrime = crimeLists[position]
+        tvTitle.text = currentCrime.title
+        tvDate.text = DateToString().formatDate(currentCrime.date)
+    }
+
+    fun setCrimes(list: List<Crime>) {
+        this.crimeLists = list
+        notifyDataSetChanged()
     }
 
     companion object {
