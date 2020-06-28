@@ -1,5 +1,6 @@
 package com.thiha.criminalintent.view
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -39,54 +40,28 @@ class CrimeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        viewModel = ListViewModel(requireActivity().application)
-
         viewModel = ViewModelProvider(requireActivity()).get(ListViewModel::class.java)
         if (arguments != null) {
 
             updateCrime()
 
+            viewModel.allCrimes.observe(viewLifecycleOwner, Observer { list ->
+                btn_send_report.setOnClickListener {
+                    var i = Intent(Intent.ACTION_SEND)
+                    val crime = list[currentPosition!!]
+                    i.type = "text/plain"
+                    i.putExtra(Intent.EXTRA_TEXT, getCrimeReport(crime))
+                    i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject))
+                    i = Intent.createChooser(i, getString(R.string.send_report_via))
+                    startActivity(i)
+                }
+            })
 
-            //        btn_crime_date.setOnClickListener {
-//            val fm = parentFragmentManager
-//            val datePickerFragment = DatePickerFragment.newInstance(currentCrime!!.mDate)
-//            datePickerFragment.setTargetFragment(this, REQUEST_DATE)
-//            datePickerFragment.show(fm, DIALOG_DATE)
-
-//            val calendar = Calendar.getInstance()
-//            calendar.time = Date()
-//        = arguments?.getSerializable(ARG_DATE) as Date
-//            val year = calendar.get(Calendar.YEAR)
-//            val month = calendar.get(Calendar.MONTH)
-//            val day = calendar.get(Calendar.DAY_OF_MONTH)
-//            val v = LayoutInflater.from(requireContext())
-//                .inflate(R.layout.dialog_date, null)
-//            val datePicker = v.findViewById(R.id.id_datePicker) as DatePicker
-//            datePicker.init(year, month, day, null)
-
-
-//            AlertDialog.Builder(this.requireContext())
-//                .setTitle(R.string.date_picker_title)
-//                .setView(v)
-//                .setPositiveButton(
-//                    "Yes"
-//                ) { _, _ ->
-//                    currentCrime!!.mDate =
-//                        GregorianCalendar(
-//                            datePicker.year,
-//                            datePicker.month,
-//                            datePicker.dayOfMonth
-//                        ).time
-//                    btn_crime_date.text = DateToString().formatDate(currentCrime!!.mDate)
-//                }
-//                .create().show()
-        } else {
-            btn_done.setOnClickListener {
-                insertCrime()
+                btn_done.setOnClickListener {
+                    insertCrime()
+                }
             }
         }
-
-    }
 
     private fun updateCrime() {
         currentPosition = arguments?.getInt(ARG_CRIME_ID)
@@ -139,6 +114,7 @@ class CrimeFragment : Fragment() {
                         date = Date(),
                         solved = checkbox_crime_solved.isChecked,
                         requiredPolice = (checkbox_required_police.isChecked)
+                        , suspect = btn_choose_suspect.text.toString()
                     )
                 )
                 if (result.isActive || !result.isCancelled || result.isCompleted) {
@@ -172,21 +148,36 @@ class CrimeFragment : Fragment() {
         findNavController().navigate(R.id.goHome)
     }
 
+    private fun getCrimeReport(crime: Crime): String {
+        val solvedString = if (crime.solved) {
+            getString(R.string.crime_report_solved)
+        } else {
+            getString(R.string.crime_report_unsolved)
+        }
+        val suspectString =
+            if (crime.suspect == resources.getString(R.string.choose_suspect)) {
+                resources.getString(R.string.crime_report_no_suspect)
+            } else {
+                resources.getString(R.string.crime_report_suspect, crime.suspect)
+            }
 
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        if (requestCode == REQUEST_DATE && resultCode == Activity.RESULT_OK) {
-//            btn_crime_date.text = data?.getSerializableExtra("DatePickerFragment").toString()
-//            currentCrime?.date =
-//                (data?.getSerializableExtra("DatePickerFragment") as Date).toString()
-//            Toast.makeText(this.context, "OK", Toast.LENGTH_SHORT).show()
-//        }
-//    }
+        return resources.getString(
+            R.string.crime_report,
+            crime.title,
+            crime.date,
+            solvedString,
+            suspectString
+        )
+    }
+
+    private fun chooseSuspect(): String {
+//        val intent = Intent(Intent.)
+        return ""
+    }
 
 
     companion object {
         private const val ARG_CRIME_ID = "crime_id"
-        private const val TAG = "CrimeFragment"
         fun newInstance(crimeID: Int): Fragment {
             val bundle = Bundle()
             bundle.putInt(ARG_CRIME_ID, crimeID)

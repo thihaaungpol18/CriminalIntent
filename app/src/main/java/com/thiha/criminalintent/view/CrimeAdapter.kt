@@ -10,7 +10,6 @@ import com.thiha.criminalintent.model.Crime
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 /**
 project: CriminalIntent
 Created by : Thiha

@@ -66,7 +66,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/checkbox_crime_solved" />
 
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/btn_done"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -86,4 +86,24 @@
         app:layout_constraintBottom_toTopOf="@id/btn_done"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_crime_date" />
+
+    <Button
+        android:id="@+id/btn_choose_suspect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/choose_suspect"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_done" />
+
+    <Button
+        android:id="@+id/btn_send_report"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/send_report"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_done" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
