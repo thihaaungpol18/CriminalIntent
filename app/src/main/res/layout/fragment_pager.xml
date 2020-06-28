@@ -1,39 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.PagerFragment">
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/id_viewpager"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/id_toolbar_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="?attr/actionBarSize" />
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_margin="8dp"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:layout_below="@id/id_toolbar_pager">
 
-        <ImageButton
-            android:id="@+id/btn_first"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/start"
-            android:src="@drawable/ic_start"
-            android:visibility="visible" />
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/id_viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-        <ImageButton
-            android:id="@+id/btn_end"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/end"
-            android:src="@drawable/ic_end"
-            android:visibility="visible" />
-    </LinearLayout>
-</FrameLayout>
+            android:layout_gravity="bottom"
+            android:layout_margin="8dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btn_first"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="@string/start"
+                android:src="@drawable/ic_start"
+                android:visibility="visible" />
+
+            <ImageButton
+                android:id="@+id/btn_end"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="@string/end"
+                android:src="@drawable/ic_end"
+                android:visibility="visible" />
+        </LinearLayout>
+    </FrameLayout>
+</RelativeLayout>

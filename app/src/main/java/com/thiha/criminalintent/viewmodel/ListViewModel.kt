@@ -41,5 +41,4 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteAllCrimes() = viewModelScope.launch(Dispatchers.IO) {
         crimeRepository.deleteAllCrimes()
     }
-
 }

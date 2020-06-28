@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.*
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.thiha.criminalintent.R
@@ -29,6 +32,10 @@ class PagerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setHasOptionsMenu(true)
+        val toolbar = view.findViewById<Toolbar>(R.id.id_toolbar_pager)
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
 
         if (arguments != null) {
             currentPosition = requireArguments().getInt("clickPosition")
@@ -77,22 +84,11 @@ class PagerFragment : Fragment() {
             }, 100)
         }
 
-    }
+        NavigationUI.setupWithNavController(toolbar, findNavController())
 
-    class CrimePagerAdapter(fragment: Fragment, private val itemsSize: Int) :
-        FragmentStateAdapter(fragment) {
-
-        override fun getItemCount(): Int {
-            return itemsSize
-        }
-
-        override fun createFragment(position: Int): Fragment {
-            return CrimeFragment.newInstance(position)
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_crime, menu)
     }
 
@@ -107,4 +103,15 @@ class PagerFragment : Fragment() {
         return false
     }
 
+    class CrimePagerAdapter(fragment: Fragment, private val itemsSize: Int) :
+        FragmentStateAdapter(fragment) {
+
+        override fun getItemCount(): Int {
+            return itemsSize
+        }
+
+        override fun createFragment(position: Int): Fragment {
+            return CrimeFragment.newInstance(position)
+        }
+    }
 }

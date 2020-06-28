@@ -183,6 +183,7 @@ class CrimeFragment : Fragment() {
 //        }
 //    }
 
+
     companion object {
         private const val ARG_CRIME_ID = "crime_id"
         private const val TAG = "CrimeFragment"

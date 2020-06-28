@@ -47,7 +47,7 @@
     <fragment
         android:id="@+id/pagerFragment"
         android:name="com.thiha.criminalintent.view.PagerFragment"
-        android:label="fragment_pager"
+        android:label="Crime Detail"
         tools:layout="@layout/fragment_pager">
         <action
             android:id="@+id/goHome"
