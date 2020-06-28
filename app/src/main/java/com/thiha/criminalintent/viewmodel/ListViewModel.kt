@@ -4,9 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import com.thiha.criminalintent.db.Crime
-import com.thiha.criminalintent.db.CrimeDatabase
-import com.thiha.criminalintent.db.CrimeRepository
+import com.thiha.criminalintent.model.Crime
+import com.thiha.criminalintent.model.CrimeDatabase
+import com.thiha.criminalintent.model.CrimeRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

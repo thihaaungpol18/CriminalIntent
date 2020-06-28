@@ -1,8 +1,12 @@
 # CriminalIntent
 Criminal App From Big Nerd Ranch Book
-*** Room ***
-*** Navigation Component ***
-*** MVVM Architecture ***
-*** ViewModel ***
-*** LiveData ***
-*** Etc. ***
+Repository with another Room Database exercise.
+
+### Library Used
+
+- [x] MVVM Architecture
+- [x] Navigation Component
+- [x] Room Database
+- [x] ViewModel
+- [x] LiveData
+- [x] Etc.

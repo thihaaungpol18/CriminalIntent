@@ -1,4 +1,4 @@
-package com.thiha.criminalintent.db
+package com.thiha.criminalintent.model
 
 import androidx.lifecycle.LiveData
 

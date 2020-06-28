@@ -1,4 +1,4 @@
-package com.thiha.criminalintent.ui
+package com.thiha.criminalintent.view
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.thiha.criminalintent.R
-import com.thiha.criminalintent.db.Crime
+import com.thiha.criminalintent.model.Crime
 import java.text.SimpleDateFormat
 import java.util.*
 

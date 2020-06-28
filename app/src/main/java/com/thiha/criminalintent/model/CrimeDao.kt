@@ -1,4 +1,4 @@
-package com.thiha.criminalintent.db
+package com.thiha.criminalintent.model
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
@@ -11,13 +11,13 @@ date : 6/27/2020
 @Dao
 interface CrimeDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(crime: Crime)
 
     @Delete
-    suspend fun deleteCrime(crime:Crime)
+    suspend fun deleteCrime(crime: Crime)
 
-    @Update(onConflict = OnConflictStrategy.IGNORE)
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(crime: Crime)
 
     @Query("SELECT * FROM crime_table ORDER BY id DESC")

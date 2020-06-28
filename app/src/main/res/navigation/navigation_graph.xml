@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/listFrag"
-        android:name="com.thiha.criminalintent.ui.CrimeListFragment"
+        android:name="com.thiha.criminalintent.view.CrimeListFragment"
         android:label="Home"
         tools:layout="@layout/fragment_list_crime">
         <action
@@ -32,7 +32,7 @@
 
     <fragment
         android:id="@+id/detailFrag"
-        android:name="com.thiha.criminalintent.ui.CrimeFragment"
+        android:name="com.thiha.criminalintent.view.CrimeFragment"
         android:label="New Crime"
         tools:layout="@layout/fragment_crime">
         <action
@@ -40,12 +40,21 @@
             app:destination="@id/listFrag"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/listFrag" />
+            app:popUpTo="@id/listFrag"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
         android:id="@+id/pagerFragment"
-        android:name="com.thiha.criminalintent.ui.PagerFragment"
+        android:name="com.thiha.criminalintent.view.PagerFragment"
         android:label="fragment_pager"
-        tools:layout="@layout/fragment_pager" />
+        tools:layout="@layout/fragment_pager">
+        <action
+            android:id="@+id/goHome"
+            app:destination="@id/listFrag"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/listFrag"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>
