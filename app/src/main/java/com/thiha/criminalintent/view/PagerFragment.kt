@@ -11,7 +11,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.thiha.criminalintent.R
-import com.thiha.criminalintent.model.Crime
 import com.thiha.criminalintent.viewmodel.ListViewModel
 import kotlinx.android.synthetic.main.fragment_pager.*
 
@@ -20,7 +19,6 @@ class PagerFragment : Fragment() {
     private lateinit var viewModel: ListViewModel
     private lateinit var adapter: CrimePagerAdapter
     private var currentPosition: Int? = null
-    private var crimes = emptyList<Crime>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,40 +41,41 @@ class PagerFragment : Fragment() {
 
         viewModel = ViewModelProvider(this@PagerFragment).get(ListViewModel::class.java)
 
-        viewModel.allCrimes.observe(viewLifecycleOwner, Observer { crimes = it })
+        viewModel.allCrimes.observe(viewLifecycleOwner, Observer { list ->
 
-        id_viewpager.adapter = adapter
+            adapter = CrimePagerAdapter(this@PagerFragment, list.size)
 
-        adapter = CrimePagerAdapter(this@PagerFragment, crimes.size)
+            id_viewpager.adapter = adapter
 
-        btn_end.setOnClickListener {
-            Handler().postDelayed({
-                id_viewpager.setCurrentItem(crimes.size, false)
-            }, 100)
-        }
+            btn_end.setOnClickListener {
+                Handler().postDelayed({
+                    id_viewpager.setCurrentItem(list.size, false)
+                }, 100)
+            }
+
+            id_viewpager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+
+                    if (position == 0 && btn_first.visibility == Button.VISIBLE) {
+                        btn_first.visibility = Button.GONE
+                    } else {
+                        btn_first.visibility = Button.VISIBLE
+                    }
+                    if (position == (list.size - 1) && btn_end.visibility == Button.VISIBLE) {
+                        btn_end.visibility = Button.GONE
+                    } else {
+                        btn_end.visibility = Button.VISIBLE
+                    }
+                }
+            })
+        })
 
         btn_first.setOnClickListener {
             Handler().postDelayed({
                 id_viewpager.setCurrentItem(0, false)
             }, 100)
         }
-
-        id_viewpager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-
-                if (position == 0 && btn_first.visibility == Button.VISIBLE) {
-                    btn_first.visibility = Button.GONE
-                } else {
-                    btn_first.visibility = Button.VISIBLE
-                }
-                if (position == (crimes.size - 1) && btn_end.visibility == Button.VISIBLE) {
-                    btn_end.visibility = Button.GONE
-                } else {
-                    btn_end.visibility = Button.VISIBLE
-                }
-            }
-        })
 
     }
 
