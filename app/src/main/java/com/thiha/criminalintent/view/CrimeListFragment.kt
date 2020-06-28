@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import com.thiha.criminalintent.R
 import com.thiha.criminalintent.viewmodel.ListViewModel
 import kotlinx.android.synthetic.main.fragment_list_crime.*
@@ -33,6 +32,7 @@ date : 6/18/2020
 class CrimeListFragment : Fragment(), CrimeAdapter.OnClickListener {
     private lateinit var adapter: CrimeAdapter
     private lateinit var viewModel: ListViewModel
+    private lateinit var toolbar: Toolbar
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +47,7 @@ class CrimeListFragment : Fragment(), CrimeAdapter.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         setHasOptionsMenu(true)
-        val toolbar = view.findViewById<Toolbar>(R.id.id_toolbar_list)
+        toolbar = view.findViewById(R.id.id_toolbar_list)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
 
         viewModel =
@@ -165,10 +165,23 @@ class CrimeListFragment : Fragment(), CrimeAdapter.OnClickListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_show_sub) {
-            Snackbar.make(requireView(), "Subtitle Shown", Snackbar.LENGTH_LONG).show()
+            if (toolbar.subtitle.isNullOrEmpty()) {
+                showSubtitle()
+                item.title = resources.getString(R.string.hide_subtitle)
+            } else {
+                item.title = resources.getString(R.string.show_subtitle)
+                toolbar.subtitle = ""
+            }
             return true
         }
         return false
+    }
+
+    private fun showSubtitle() {
+        viewModel.allCrimes.observe(viewLifecycleOwner, Observer {
+            toolbar.subtitle =
+                resources.getQuantityString(R.plurals.subtitle_plural, it.size, it.size)
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
