@@ -35,5 +35,8 @@
     <string name="crime_report_subject">CriminalIntent Crime Report</string>
     <string name="send_report_via">Send crime report via</string>
     <string name="picker">Picker</string>
+    <string name="setDate">Set Date</string>
+    <string name="update">Update</string>
+    <string name="save">Save</string>
 
 </resources>
