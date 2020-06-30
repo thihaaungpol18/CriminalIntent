@@ -1,8 +1,13 @@
 package com.thiha.criminalintent.view
 
+import android.app.Activity
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.ContactsContract
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +33,13 @@ class CrimeFragment : Fragment() {
     private lateinit var viewModel: ListViewModel
     private var currentPosition: Int? = null
     private var currentCrime: Crime? = null
+
+    private var globalYear: Int? = null
+    private var globalMonth: Int? = null
+    private var globalDay: Int? = null
+    private var globalHour: Int? = null
+    private var globalMinute: Int? = null
+    private var globalDate: Date? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,11 +69,23 @@ class CrimeFragment : Fragment() {
                 }
             })
 
-                btn_done.setOnClickListener {
-                    insertCrime()
-                }
+            btn_done.setOnClickListener {
+                insertCrime()
             }
         }
+
+        btn_done.setOnClickListener {
+            insertCrime()
+        }
+
+        btn_choose_suspect.setOnClickListener {
+            chooseSuspect()
+        }
+
+        btn_crime_date.setOnClickListener {
+            openPickers()
+        }
+    }
 
     private fun updateCrime() {
         currentPosition = arguments?.getInt(ARG_CRIME_ID)
@@ -69,6 +93,8 @@ class CrimeFragment : Fragment() {
         viewModel.allCrimes.observe(viewLifecycleOwner, Observer {
             if (currentPosition != -1) {
                 currentCrime = it[currentPosition!!]
+
+                globalDate = currentCrime!!.date
 
                 et_title.setText(currentCrime!!.title)
 
@@ -86,7 +112,7 @@ class CrimeFragment : Fragment() {
                     currentCrime!!.title = et_title.text.toString().trim()
                     currentCrime!!.requiredPolice = checkbox_required_police.isChecked
                     currentCrime!!.solved = checkbox_crime_solved.isChecked
-                    currentCrime!!.date = Date()
+                    currentCrime!!.date = globalDate!!
                     val result = viewModel.update(currentCrime!!)
                     if (result.isCompleted || !result.isCancelled || result.isActive) {
                         val snackBar = Snackbar.make(et_title, "Updated", Snackbar.LENGTH_LONG)
@@ -111,7 +137,7 @@ class CrimeFragment : Fragment() {
                     Crime(
                         id = 0,
                         title = et_title.text.toString().trim(),
-                        date = Date(),
+                        date = globalDate!!,
                         solved = checkbox_crime_solved.isChecked,
                         requiredPolice = (checkbox_required_police.isChecked)
                         , suspect = btn_choose_suspect.text.toString()
@@ -170,14 +196,97 @@ class CrimeFragment : Fragment() {
         )
     }
 
-    private fun chooseSuspect(): String {
-//        val intent = Intent(Intent.)
-        return ""
+    private fun chooseSuspect() {
+
+        val contactIntent =
+            Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)
+        startActivityForResult(contactIntent, CONTACT_REQUEST)
     }
 
+    private fun openPickers() {
+
+        val c = Calendar.getInstance()
+        val year = c.get(Calendar.YEAR)
+        val month = c.get(Calendar.MONTH)
+        val day = c.get(Calendar.DAY_OF_MONTH)
+
+
+        val timePickerDialog = TimePickerDialog(
+            requireContext(),
+            TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+                globalHour = hourOfDay
+                globalMinute = minute
+
+                val date = GregorianCalendar(
+                    globalYear!!,
+                    globalMonth!!,
+                    globalDay!!,
+                    globalHour!!,
+                    globalMinute!!
+                ).time
+
+                val formatter = SimpleDateFormat("EEE, d MMM yyyy hh:mm aaa", Locale.US)
+                val formattedDate = formatter.format(date)
+                globalDate = date
+                btn_crime_date.text = formattedDate
+            },
+            c.get(Calendar.HOUR),
+            c.get(Calendar.MINUTE),
+            false
+        )
+
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            DatePickerDialog.OnDateSetListener { _, setYear, monthOfYear, dayOfMonth ->
+                globalYear = setYear
+                globalMonth = monthOfYear
+                globalDay = dayOfMonth
+
+                timePickerDialog.show()
+
+            },
+            year,
+            month,
+            day
+        )
+        datePickerDialog.show()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        if (requestCode == CONTACT_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+            val contactUri = data.data
+            val names = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
+            val cursor = requireContext().contentResolver.query(
+                contactUri!!, names,
+                null, null, null
+            )
+            try {
+                if (cursor != null && cursor.count != 0) {
+                    cursor.moveToFirst()
+
+                    val numberIndex =
+                        cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
+
+                    val nameIndex =
+                        cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
+
+                    val number = cursor.getString(numberIndex)
+                    val name = cursor.getString(nameIndex)
+
+                    Log.i("MyLog", " number : $number $name ")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                cursor?.close()
+            }
+        }
+    }
 
     companion object {
         private const val ARG_CRIME_ID = "crime_id"
+        private const val CONTACT_REQUEST = 3
+        private const val DATETIME_REQUEST = 2
         fun newInstance(crimeID: Int): Fragment {
             val bundle = Bundle()
             bundle.putInt(ARG_CRIME_ID, crimeID)
