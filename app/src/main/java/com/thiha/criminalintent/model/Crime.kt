@@ -19,4 +19,8 @@ data class Crime(
     var solved: Boolean,
     var requiredPolice: Boolean,
     var suspect: String
-)
+) {
+    fun getFileName(): String {
+        return "IMG_$id.jpg"
+    }
+}

@@ -26,5 +26,4 @@ interface CrimeDao {
     @Query("DELETE FROM crime_table")
     suspend fun deleteAllCrimes()
 
-
 }

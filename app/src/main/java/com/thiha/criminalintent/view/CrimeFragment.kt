@@ -1,28 +1,43 @@
 package com.thiha.criminalintent.view
 
+import android.Manifest
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.single.PermissionListener
 import com.thiha.criminalintent.R
 import com.thiha.criminalintent.model.Crime
 import com.thiha.criminalintent.viewmodel.ListViewModel
 import kotlinx.android.synthetic.main.fragment_crime.*
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 /**
 project: CriminalIntent
@@ -34,7 +49,7 @@ class CrimeFragment : Fragment() {
     private lateinit var viewModel: ListViewModel
     private var currentPosition: Int? = null
     private var currentCrime: Crime? = null
-
+    private var photoFile: File? = null
     private var globalYear: Int? = null
     private var globalMonth: Int? = null
     private var globalDay: Int? = null
@@ -104,6 +119,8 @@ class CrimeFragment : Fragment() {
 
                 globalDate = currentCrime!!.date
 
+                photoFile = getPhotoFile(currentCrime!!)
+
                 et_title.setText(currentCrime!!.title)
 
                 btn_crime_date.text = formatDate(currentCrime!!.date)
@@ -135,6 +152,16 @@ class CrimeFragment : Fragment() {
                 }
 
                 btn_call_police.setOnClickListener { callPolice() }
+
+
+                val pm = activity?.packageManager
+                val canTakePhoto =
+                    photoFile != null && Intent(MediaStore.ACTION_IMAGE_CAPTURE).resolveActivity(pm!!) != null
+                if (!canTakePhoto) {
+                    btnCamera.isEnabled = false
+                } else {
+                    btnCamera.setOnClickListener { onCameraClick() }
+                }
 
             } else {
                 currentCrime = null
@@ -319,42 +346,130 @@ class CrimeFragment : Fragment() {
         startActivity(callIntent)
     }
 
+    private fun getPhotoFile(crime: Crime): File {
+        val fileDir = requireContext().filesDir
+        return File(fileDir, crime.getFileName())
+    }
+
+    private fun onCameraClick() {
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val uri = FileProvider.getUriForFile(
+            requireActivity(),
+            "com.thiha.criminalintent.fileprovider",
+            photoFile!!
+        )
+
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+
+        val resolveInfo = requireActivity().packageManager.queryIntentActivities(
+            cameraIntent,
+            PackageManager.MATCH_DEFAULT_ONLY
+        )
+
+        for (i in resolveInfo) {
+            requireActivity().grantUriPermission(
+                i.activityInfo.toString(),
+                uri,
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            )
+        }
+
+        startActivityForResult(cameraIntent, PHOTO_REQUEST)
+
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
         if (requestCode == CONTACT_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            val contactUri = data.data
-            val names = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
-            val cursor = requireContext().contentResolver.query(
-                contactUri!!, names,
-                null, null, null
-            )
-            try {
-                if (cursor != null && cursor.count != 0) {
-                    cursor.moveToFirst()
 
-//                    val numberIndex =
-//                        cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
+            Dexter.withContext(requireContext())
+                .withPermission(Manifest.permission.READ_CONTACTS)
+                .withListener(object : PermissionListener {
+                    override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
 
-                    val nameIndex =
-                        cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
+                        val contactUri = data.data
+                        var pCur: Cursor? = null
+                        val names = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
+                        val cursor = requireContext().contentResolver.query(
+                            contactUri!!, null,
+                            null, null, null
+                        )
+                        try {
+                            if (cursor != null && cursor.count != 0) {
+                                cursor.moveToFirst()
 
-//                    val number = cursor.getString(numberIndex)
-                    val name = cursor.getString(nameIndex)
 
-                    btn_choose_suspect?.text = name
-                    currentCrime?.suspect = name
+                                val nameIndex =
+                                    cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
 
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                cursor?.close()
-            }
+                                val name = cursor.getString(nameIndex)
+
+                                btn_choose_suspect?.text = name
+                                currentCrime?.suspect = name
+
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            cursor?.close()
+                        }
+                        try {
+                            if (Integer.parseInt(
+                                    cursor?.getString(
+                                        cursor.getColumnIndex(
+                                            ContactsContract.CommonDataKinds.Phone.HAS_PHONE_NUMBER
+                                        )
+                                    )!!
+                                ) > 0
+                            ) {
+                                pCur = requireContext().contentResolver.query(
+                                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                    null,
+                                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                                    arrayOf(id.toString()),
+                                    null
+                                )
+                                while (pCur?.moveToNext()!!) {
+                                    val number: String =
+                                        pCur.getString(pCur.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                                    Log.i("MyLog", "onPermissionGranted: $number")
+                                }
+                            }
+                        } catch (e: Exception) {
+                            pCur?.close()
+                        }
+
+                    }
+
+                    override fun onPermissionRationaleShouldBeShown(
+                        p0: PermissionRequest?,
+                        p1: PermissionToken?
+                    ) {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
+                        val snackBar = Snackbar.make(
+                            btn_choose_suspect,
+                            "Permission is Denied",
+                            Snackbar.LENGTH_SHORT
+                        )
+                        snackBar.setAction("Allow") { }
+                    }
+
+                }).check()
         }
+
+        if (requestCode == PHOTO_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+//            val bitmap = BitmapFactory.decodeFile(photoFile?.path)
+            Glide.with(requireContext()).load(photoFile?.path).into(ivProfile)
+        }
+
     }
 
     companion object {
         private const val ARG_CRIME_ID = "crime_id"
         private const val CONTACT_REQUEST = 3
+        private const val PHOTO_REQUEST = 2
         fun newInstance(crimeID: Int): Fragment {
             val bundle = Bundle()
             bundle.putInt(ARG_CRIME_ID, crimeID)
