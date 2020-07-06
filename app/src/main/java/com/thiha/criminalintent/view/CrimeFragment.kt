@@ -399,7 +399,7 @@ class CrimeFragment : Fragment() {
                 ActivityCompat.requestPermissions(
                     requireActivity(),
                     arrayOf(Manifest.permission.READ_CONTACTS),
-                    5
+                    PERMISSION_REQUEST
                 )
             } else {
 
@@ -444,15 +444,19 @@ class CrimeFragment : Fragment() {
                         return
                     } else {
                         if (secondCursor.moveToFirst()) {
-                            phone = secondCursor.getString(0)
+                            phone = if (!secondCursor.getString(0).isNullOrEmpty()) {
+                                secondCursor.getString(0)
+                            } else {
+                                ""
+                            }
                             secondCursor.close()
                         }
                     }
                 }
-
                 btn_choose_suspect.text = name
+                currentCrime?.suspect = name
+                currentCrime?.suspect_ph = phone
                 globalSuspectPhone = phone
-
             }
         }
 
@@ -467,6 +471,7 @@ class CrimeFragment : Fragment() {
         private const val ARG_CRIME_ID = "crime_id"
         private const val CONTACT_REQUEST = 3
         private const val PHOTO_REQUEST = 2
+        private const val PERMISSION_REQUEST = 1
         fun newInstance(crimeID: Int): Fragment {
             val bundle = Bundle()
             bundle.putInt(ARG_CRIME_ID, crimeID)

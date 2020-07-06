@@ -26,8 +26,6 @@ class CrimeAdapter(
         RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
         init {
-            tvTitle = itemView.findViewById(R.id.item_title)
-            tvDate = itemView.findViewById(R.id.item_date)
             itemView.setOnClickListener(this)
         }
 
@@ -40,8 +38,6 @@ class CrimeAdapter(
         RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
         init {
-            tvTitle = itemView.findViewById(R.id.item_title)
-            tvDate = itemView.findViewById(R.id.item_date)
             itemView.setOnClickListener(this)
         }
 
@@ -77,6 +73,15 @@ class CrimeAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentCrime = crimeLists[position]
+        val tvTitle: TextView
+        val tvDate: TextView
+        if (holder.itemViewType == BigCrime) {
+            tvTitle = holder.itemView.findViewById(R.id.item_title_big)
+            tvDate = holder.itemView.findViewById(R.id.item_date_big)
+        } else {
+            tvTitle = holder.itemView.findViewById(R.id.item_title)
+            tvDate = holder.itemView.findViewById(R.id.item_date)
+        }
         tvTitle.text = currentCrime.title
         val formatter = SimpleDateFormat("EEE, d MMM yyyy hh:mm aaa", Locale.US)
         val date = formatter.format(currentCrime.date)
@@ -89,8 +94,6 @@ class CrimeAdapter(
     }
 
     companion object {
-        private lateinit var tvTitle: TextView
-        private lateinit var tvDate: TextView
         const val BigCrime = 1
         const val SmallCrime = 0
     }

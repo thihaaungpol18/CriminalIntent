@@ -27,7 +27,8 @@
             android:id="@+id/IVnoItem"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:contentDescription="@string/no_items_image_view" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/id_fab"
