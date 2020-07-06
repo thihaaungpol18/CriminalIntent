@@ -6,7 +6,6 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -17,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -24,12 +24,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.single.PermissionListener
 import com.thiha.criminalintent.R
 import com.thiha.criminalintent.model.Crime
 import com.thiha.criminalintent.viewmodel.ListViewModel
@@ -37,7 +31,6 @@ import kotlinx.android.synthetic.main.fragment_crime.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 /**
 project: CriminalIntent
@@ -56,6 +49,7 @@ class CrimeFragment : Fragment() {
     private var globalHour: Int? = null
     private var globalMinute: Int? = null
     private var globalDate: Date? = null
+    private var globalSuspectPhone: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -90,9 +84,11 @@ class CrimeFragment : Fragment() {
             btn_done.text = getString(R.string.save)
 
             btn_send_report.visibility = Button.GONE
-
             btn_choose_suspect.setOnClickListener {
                 chooseSuspect()
+            }
+            btn_call.setOnClickListener {
+                callSuspect()
             }
 
             btn_done.setOnClickListener {
@@ -119,6 +115,8 @@ class CrimeFragment : Fragment() {
 
                 globalDate = currentCrime!!.date
 
+                globalSuspectPhone = currentCrime!!.suspect_ph
+
                 photoFile = getPhotoFile(currentCrime!!)
 
                 et_title.setText(currentCrime!!.title)
@@ -141,6 +139,9 @@ class CrimeFragment : Fragment() {
 
                 btn_choose_suspect.setOnClickListener {
                     chooseSuspect()
+                }
+                btn_call.setOnClickListener {
+                    callSuspect()
                 }
 
                 btn_send_report.setOnClickListener {
@@ -200,7 +201,8 @@ class CrimeFragment : Fragment() {
                     date = globalDate!!,
                     solved = checkbox_crime_solved.isChecked,
                     requiredPolice = (checkbox_required_police.isChecked),
-                    suspect = btn_choose_suspect.text.toString()
+                    suspect = btn_choose_suspect.text.toString(),
+                    suspect_ph = globalSuspectPhone!!
                 )
             )
             if (result.isActive || !result.isCancelled || result.isCompleted) {
@@ -252,6 +254,11 @@ class CrimeFragment : Fragment() {
             et_title.error = "Crime Title Plz"
             et_title.requestFocus()
         }
+    }
+
+    private fun callSuspect() {
+        val callIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel: $globalSuspectPhone "))
+        startActivity(callIntent)
     }
 
     private fun formatDate(date: Date): String {
@@ -380,83 +387,73 @@ class CrimeFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
-        if (requestCode == CONTACT_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == CONTACT_REQUEST && resultCode == Activity.RESULT_OK && resultCode != Activity.RESULT_CANCELED && data != null) {
 
-            Dexter.withContext(requireContext())
-                .withPermission(Manifest.permission.READ_CONTACTS)
-                .withListener(object : PermissionListener {
-                    override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
+            Log.i("MyLog", "returnContactData : ${data.data} \n\n $data ")
 
-                        val contactUri = data.data
-                        var pCur: Cursor? = null
-                        val names = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
-                        val cursor = requireContext().contentResolver.query(
-                            contactUri!!, null,
-                            null, null, null
-                        )
-                        try {
-                            if (cursor != null && cursor.count != 0) {
-                                cursor.moveToFirst()
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_CONTACTS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(Manifest.permission.READ_CONTACTS),
+                    5
+                )
+            } else {
 
+                var name = ""
+                var phone = ""
 
-                                val nameIndex =
-                                    cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
+                val projection = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
 
-                                val name = cursor.getString(nameIndex)
+                val cursor = requireContext().contentResolver.query(
+                    data.data!!,
+                    projection,
+                    null,
+                    null,
+                    null
+                )
 
-                                btn_choose_suspect?.text = name
-                                currentCrime?.suspect = name
+                if (cursor != null) {
 
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            cursor?.close()
+                    if (cursor.count == 0) {
+                        return
+                    } else {
+                        if (cursor.moveToFirst()) {
+                            name = cursor.getString(0)
+                            cursor.close()
                         }
-                        try {
-                            if (Integer.parseInt(
-                                    cursor?.getString(
-                                        cursor.getColumnIndex(
-                                            ContactsContract.CommonDataKinds.Phone.HAS_PHONE_NUMBER
-                                        )
-                                    )!!
-                                ) > 0
-                            ) {
-                                pCur = requireContext().contentResolver.query(
-                                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                                    null,
-                                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                                    arrayOf(id.toString()),
-                                    null
-                                )
-                                while (pCur?.moveToNext()!!) {
-                                    val number: String =
-                                        pCur.getString(pCur.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
-                                    Log.i("MyLog", "onPermissionGranted: $number")
-                                }
-                            }
-                        } catch (e: Exception) {
-                            pCur?.close()
+                    }
+                }
+                val selection = "${ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME} =?"
+
+                val selectionArgs = arrayOf(name)
+
+                val secondCursor = requireContext().contentResolver.query(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    arrayOf(ContactsContract.CommonDataKinds.Phone.DATA4),
+                    selection,
+                    selectionArgs,
+                    null
+                )
+
+                if (secondCursor != null) {
+                    if (secondCursor.count == 0) {
+                        return
+                    } else {
+                        if (secondCursor.moveToFirst()) {
+                            phone = secondCursor.getString(0)
+                            secondCursor.close()
                         }
-
                     }
+                }
 
-                    override fun onPermissionRationaleShouldBeShown(
-                        p0: PermissionRequest?,
-                        p1: PermissionToken?
-                    ) {
-                        TODO("Not yet implemented")
-                    }
+                btn_choose_suspect.text = name
+                globalSuspectPhone = phone
 
-                    override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
-                        val snackBar = Snackbar.make(
-                            btn_choose_suspect,
-                            "Permission is Denied",
-                            Snackbar.LENGTH_SHORT
-                        )
-                        snackBar.setAction("Allow") { }
-                    }
-
-                }).check()
+            }
         }
 
         if (requestCode == PHOTO_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
